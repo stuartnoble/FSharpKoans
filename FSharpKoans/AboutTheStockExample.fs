@@ -1,5 +1,7 @@
 ﻿namespace FSharpKoans
 open FSharpKoans.Core
+open System
+open System.Globalization
 
 //---------------------------------------------------------------
 // Apply Your Knowledge!
@@ -58,8 +60,25 @@ module ``about the stock example`` =
     // tests for yourself along the way. You can also try 
     // using the F# Interactive window to check your progress.
 
+    let splitCommas (lineItem:string) =
+        lineItem.Split([|','|])
+
+    let getPriceDiff (lineItem:string[]) =
+        let date = lineItem.[0]
+        let openPrice = Double.Parse(lineItem.[1], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture)
+        let closePrice = Double.Parse(lineItem.[4], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture)
+        let priceDiff = abs (openPrice - closePrice)
+
+        (date, priceDiff)
+
     [<Koan>]
     let YouGotTheAnswerCorrect() =
-        let result =  __
-        
+        let result = 
+            stockData.Tail
+            |> List.map splitCommas
+            |> List.map getPriceDiff
+            |> List.sortByDescending snd
+            |> List.head
+            |> fst
+
         AssertEquality "2012-03-13" result
